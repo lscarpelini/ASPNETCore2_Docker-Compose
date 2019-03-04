@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SiteHeroisMarvel.MongoService;
 
 namespace SiteHeroisMarvel
 {
@@ -28,7 +29,11 @@ namespace SiteHeroisMarvel
                     Configuration.GetConnectionString("ConexaoRedis");
                 options.InstanceName = "TesteRedisCache";
             });
-            
+
+            //Adiciona Serviço do Mongo
+            services.AddScoped<SiteHeroisMarvelMongoService>();
+
+            //Adiciona serviço MVC
             services.AddMvc();
         }
 

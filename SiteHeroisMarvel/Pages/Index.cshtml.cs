@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using SiteHeroisMarvel.MongoService;
 
 namespace SiteHeroisMarvel.Pages
 {
@@ -21,11 +22,15 @@ namespace SiteHeroisMarvel.Pages
             "Doctor Strange", "Daredevil"
         };
 
+        //Servico Mongo
+        private  SiteHeroisMarvelMongoService _siteHeroisMarvelMongoService;
+
         public void OnGet(
             [FromServices]IConfiguration config,
             [FromServices]IDistributedCache cache)
         {
             Personagem personagem = null;
+            _siteHeroisMarvelMongoService = new SiteHeroisMarvelMongoService(config);
             string heroi = HEROIS[new Random().Next(0, 9)];
 
             string valorJSON = cache.GetString(heroi);
@@ -48,9 +53,13 @@ namespace SiteHeroisMarvel.Pages
 
                         valorJSON = JsonConvert.SerializeObject(personagem);
                         cache.SetString(heroi, valorJSON, opcoesCache);
+
                     }
                 }
             }
+
+            //Salva no mongo
+            _siteHeroisMarvelMongoService.Create(personagem);
             
             if (personagem == null && valorJSON != null)
             {
